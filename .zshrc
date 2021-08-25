@@ -1,3 +1,7 @@
+# 2021-08-25 added for Ruby version exchange
+export PATH=$HOME/.rbenv/bin:$PATH
+eval "$(rbenv init -)"
+
 fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
 

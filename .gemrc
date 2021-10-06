@@ -1,0 +1,5 @@
+# インストール時間短縮のため、ドキュメント生成を省略する設定
+# 引用元：https://github.com/JunichiIto/dotfiles/blob/master/.gemrc
+# 参照先：https://qiita.com/ginpei/items/49f2c749c2b12098718e
+# 参照先：https://try2explore.com/questions/jp/10005293
+gem: --no-document

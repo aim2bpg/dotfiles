@@ -49,6 +49,13 @@ Plug 'andymass/vim-matchup'
 
 " 余談: neocompleteは合わなかった。ctrl+pで補完するのが便利
 
+" 2021/11/12 Added by aim2bpg Javascriptプラクティス「ESLintを使えるようにしてバグの出やすい書き方を避けられるようにする」
+" 参照先：https://github.com/dense-analysis/ale
+Plug 'dense-analysis/ale'
+" 参照先：https://github.com/vim-airline/vim-airline
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
 call plug#end()
 
 " filetypeの検出を有効化する => vim-plugでは不要
@@ -232,12 +239,110 @@ if has("autocmd")
 endif
 """"""""""""""""""""""""""""""
 
+" 2021/11/12 Deleted by aim2bpg しばらく使ってみたが、合わなかった
 """"""""""""""""""""""""""""""
 " 自動的に閉じ括弧を入力
 """"""""""""""""""""""""""""""
-imap { {}<LEFT>
-imap [ []<LEFT>
-imap ( ()<LEFT>
+" imap { {}<LEFT>
+" imap [ []<LEFT>
+" imap ( ()<LEFT>
+""""""""""""""""""""""""""""""
+
+" 2021/11/12 Added by aim2bpg Javascriptプラクティス「ESLintを使えるようにしてバグの出やすい書き方を避けられるようにする」
+""""""""""""""""""""""""""""""
+" 参照先：https://standardjs.com/readme-ja.html
+""""""""""""""""""""""""""""""
+" 特定のLintツールのみを有効にする
+""""""""""""""""""""""""""""""
+let g:ale_linters = {
+\   'javascript': ['standard'],
+\}
+let g:ale_fixers = {'javascript': ['standard']}
+let g:ale_lint_on_save = 1
+let g:ale_fix_on_save = 1
+""""""""""""""""""""""""""""""
+" 参照先：https://github.com/dense-analysis/ale
+""""""""""""""""""""""""""""""
+" ステータス表示プラグインのALE用設定
+""""""""""""""""""""""""""""""
+let g:airline#extensions#ale#enabled = 1
+""""""""""""""""""""""""""""""
+" エラーと警告数をステータスラインに表示する
+""""""""""""""""""""""""""""""
+function! LinterStatus() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+
+  return l:counts.total == 0 ? 'OK' : printf(
+  \   '%dW %dE',
+  \   all_non_errors,
+  \   all_errors
+  \)
+endfunction
+
+set statusline=%{LinterStatus()}
+""""""""""""""""""""""""""""""
+" 参照先： https://wonderwall.hatenablog.com/entry/2017/03/01/223934
+""""""""""""""""""""""""""""""
+" 左端のシンボルカラムを表示したままにする
+""""""""""""""""""""""""""""""
+let g:ale_sign_column_always = 1
+""""""""""""""""""""""""""""""
+" エラーと警告のシンボルを変更したい場合は以下のように記述する
+""""""""""""""""""""""""""""""
+" let g:ale_sign_error = '!!'
+" let g:ale_sign_warning = '=='
+""""""""""""""""""""""""""""""
+" ハイライトも変更可能で、無効にしたい場合は下記設定を追加する
+""""""""""""""""""""""""""""""
+" highlight clear ALEErrorSign
+" highlight clear ALEWarningSign
+""""""""""""""""""""""""""""""
+" ステータスラインで表示するフォーマットを変更したい場合は、下記設定を追加
+""""""""""""""""""""""""""""""
+" let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+""""""""""""""""""""""""""""""
+" メッセージのフォーマットを変更する
+""""""""""""""""""""""""""""""
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+""""""""""""""""""""""""""""""
+" コードチェック完了後に特定の操作を実行する
+""""""""""""""""""""""""""""""
+" augroup YourGroup
+"     autocmd!
+"     autocmd User ALELint call YourFunction()
+" augroup END
+""""""""""""""""""""""""""""""
+" エラー間をキー操作で移動する
+""""""""""""""""""""""""""""""
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+""""""""""""""""""""""""""""""
+" 入力中のコードチェックはやめて、ファイル保存時のみチェックする
+""""""""""""""""""""""""""""""
+" let g:ale_lint_on_save = 1
+" let g:ale_lint_on_text_changed = 0
+""""""""""""""""""""""""""""""
+" ファイルオープン時にチェックしたくない場合
+""""""""""""""""""""""""""""""
+" let g:ale_lint_on_enter = 0
+""""""""""""""""""""""""""""""
+" ロケーションリストの代わりにQuickFixを使用する
+""""""""""""""""""""""""""""""
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+""""""""""""""""""""""""""""""
+" エラーと警告の一覧を見るためにウィンドウを開いておく
+""""""""""""""""""""""""""""""
+let g:ale_open_list = 1
+""""""""""""""""""""""""""""""
+" エラーと警告がなくなっても開いたままにする
+""""""""""""""""""""""""""""""
+" let g:ale_keep_list_window_open = 1
 """"""""""""""""""""""""""""""
 
 " filetypeの自動検出(最後の方に書いた方がいいらしい)
